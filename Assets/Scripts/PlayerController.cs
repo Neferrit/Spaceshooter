@@ -10,17 +10,36 @@ public class Boundaries
 }
 public class PlayerController : MonoBehaviour
 {
+    GamepadInput gamepad;
+
+    public GameObject shot;
+    public Transform shotSpawn;
+    public Rigidbody rib;
+
     public float speed;
     public float turboMultiplier;
     public float tilt;
     float turbo = 1.0f;
     
-    GamepadInput gamepad;
-    
-    public Rigidbody rib;
+    private bool shooting = false;
+    private float nextshot = 0.0f;
+    public float shotsPerMinute; //shots per minute
+    private float shotFrequency; //seconds per shot - calculated from shotsPerMinute
+    public float specialCooldown; //special cooldown after specialDisable
+    private float nextspecial = 0.0f;
+    public float specialDuration; //how long does the special go for
+    private float specialDisable = 0.0f;
+    public float specSizeMod;
+    private Vector3 specialSize;
+
     public Boundaries boundary;
     Vector2 move;
-    
+
+    private void Start()
+    {
+        shotFrequency = 60 / shotsPerMinute;
+        specialSize = new Vector3(specSizeMod, specSizeMod, specSizeMod);
+    }
     void Awake()
     {
         gamepad = new GamepadInput();
@@ -31,7 +50,9 @@ public class PlayerController : MonoBehaviour
         gamepad.Gameplay.Turbo.performed += ctx => turbo = turboMultiplier;
         gamepad.Gameplay.Turbo.canceled += ctx => turbo = 1.0f;
 
-        gamepad.Gameplay.Shoot.performed += ctx => Shoot();
+        gamepad.Gameplay.Shoot.performed += ctx => shooting = true;
+        gamepad.Gameplay.Shoot.canceled += ctx => shooting = false;
+
         gamepad.Gameplay.Special.performed += ctx => Special();
     }
     private void FixedUpdate()
@@ -41,13 +62,26 @@ public class PlayerController : MonoBehaviour
         rib.position = new Vector3(Mathf.Clamp(rib.position.x, boundary.xMin, boundary.xMax), 0.0f, Mathf.Clamp(rib.position.z, boundary.zMin, boundary.zMax));
         rib.rotation = Quaternion.Euler(0.0f, 0.0f, rib.velocity.x * -tilt);
     }
-    void Shoot()
+    void Update()
     {
-        transform.localScale *= 1.1f;
+        if (shooting == true && Time.time > nextshot)
+        {
+            nextshot = Time.time + shotFrequency;
+            Instantiate(shot, shotSpawn.position, Quaternion.Euler(0.0f, 0.0f, 0.0f));
+        }
+        if (Time.time > specialDisable && Time.time < specialDisable + 1.0f) // range instead of == because I'm scared it might miss it if the game lags, but also don't want it checking all the time
+        {
+            shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        }
     }
     void Special()
     {
-        transform.localScale /= 1.1f;
+        if (Time.time > nextspecial)
+        {
+            specialDisable = Time.time + specialDuration;
+            nextspecial = specialDisable + specialCooldown;
+            shot.transform.localScale = specialSize;
+        }
     }
 
     private void OnEnable()

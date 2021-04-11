@@ -162,6 +162,17 @@
                 },
                 {
                     "name": "",
+                    "id": "bd326f45-342e-47e2-ab0e-29af60b46fdb",
+                    "path": "<Touchscreen>/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0.1,y=0.1)",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "ba626e6a-7ff3-43d9-b62f-334dc5090242",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
@@ -209,6 +220,17 @@
                     "id": "168ae8dc-479b-4029-a79a-737230116c5c",
                     "path": "<Mouse>/leftButton",
                     "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "be37ce09-840f-4b29-b4b5-68ad0e48b6e9",
+                    "path": "<Touchscreen>/press",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Shoot",
