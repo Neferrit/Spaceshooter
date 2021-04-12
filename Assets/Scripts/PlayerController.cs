@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     public float turboMultiplier;
     public float tilt;
     float turbo = 1.0f;
-    
+
     private bool shooting = false;
     private float nextshot = 0.0f;
     public float shotsPerMinute; //shots per minute
@@ -57,22 +57,39 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        //-  varianta 1 // horší, nekonzistence mezi časy, frames... (Time.fixedDeltaTime)
+        Vector3 velocity = new Vector3(move.x, 0.0f, move.y) * Time.fixedDeltaTime * speed * turbo;
+        rib.velocity = velocity;
+        rib.position = new Vector3(Mathf.Clamp(rib.position.x, boundary.xMin, boundary.xMax), 0.0f, Mathf.Clamp(rib.position.z, boundary.zMin, boundary.zMax));
+        rib.rotation = Quaternion.Euler(0.0f, 0.0f, rib.velocity.x * -tilt);
+        //-
+    }
+    void Update()
+    {
+        if (shooting && Time.time > nextshot)
+        {
+            nextshot = Time.time + shotFrequency;
+            Instantiate(shot, shotSpawn.position, Quaternion.identity);
+        }
+
+        //-  varianta 2, (Time.deltaTime)
         Vector3 velocity = new Vector3(move.x, 0.0f, move.y) * Time.deltaTime * speed * turbo;
         rib.velocity = velocity;
         rib.position = new Vector3(Mathf.Clamp(rib.position.x, boundary.xMin, boundary.xMax), 0.0f, Mathf.Clamp(rib.position.z, boundary.zMin, boundary.zMax));
         rib.rotation = Quaternion.Euler(0.0f, 0.0f, rib.velocity.x * -tilt);
+        //-
+
+
+        //* není potřeba, místo toho coroutine níže
+        // if (Time.time > specialDisable && Time.time < specialDisable + 1.0f) // range instead of == because I'm scared it might miss it if the game lags, but also don't want it checking all the time
+        // {
+        //     shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        // }
     }
-    void Update()
+    IEnumerator SpecialCoolDown()
     {
-        if (shooting == true && Time.time > nextshot)
-        {
-            nextshot = Time.time + shotFrequency;
-            Instantiate(shot, shotSpawn.position, Quaternion.Euler(0.0f, 0.0f, 0.0f));
-        }
-        if (Time.time > specialDisable && Time.time < specialDisable + 1.0f) // range instead of == because I'm scared it might miss it if the game lags, but also don't want it checking all the time
-        {
-            shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-        }
+        yield return new WaitForSeconds(specialDisable);
+        shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
     }
     void Special()
     {
@@ -81,6 +98,8 @@ public class PlayerController : MonoBehaviour
             specialDisable = Time.time + specialDuration;
             nextspecial = specialDisable + specialCooldown;
             shot.transform.localScale = specialSize;
+
+            StartCoroutine(SpecialCoolDown());
         }
     }
 
