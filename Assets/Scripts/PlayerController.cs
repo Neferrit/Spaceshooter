@@ -35,10 +35,13 @@ public class PlayerController : MonoBehaviour
     public Boundaries boundary;
     Vector2 move;
 
+    public AudioSource weaponSound;
+
     private void Start()
     {
         shotFrequency = 60 / shotsPerMinute;
         specialSize = new Vector3(specSizeMod, specSizeMod, specSizeMod);
+        shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
     }
     void Awake()
     {
@@ -57,12 +60,10 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        //-  varianta 1 // horší, nekonzistence mezi časy, frames... (Time.fixedDeltaTime)
         Vector3 velocity = new Vector3(move.x, 0.0f, move.y) * Time.fixedDeltaTime * speed * turbo;
         rib.velocity = velocity;
         rib.position = new Vector3(Mathf.Clamp(rib.position.x, boundary.xMin, boundary.xMax), 0.0f, Mathf.Clamp(rib.position.z, boundary.zMin, boundary.zMax));
         rib.rotation = Quaternion.Euler(0.0f, 0.0f, rib.velocity.x * -tilt);
-        //-
     }
     void Update()
     {
@@ -70,25 +71,12 @@ public class PlayerController : MonoBehaviour
         {
             nextshot = Time.time + shotFrequency;
             Instantiate(shot, shotSpawn.position, Quaternion.identity);
+            weaponSound.Play();
         }
-
-        //-  varianta 2, (Time.deltaTime)
-        Vector3 velocity = new Vector3(move.x, 0.0f, move.y) * Time.deltaTime * speed * turbo;
-        rib.velocity = velocity;
-        rib.position = new Vector3(Mathf.Clamp(rib.position.x, boundary.xMin, boundary.xMax), 0.0f, Mathf.Clamp(rib.position.z, boundary.zMin, boundary.zMax));
-        rib.rotation = Quaternion.Euler(0.0f, 0.0f, rib.velocity.x * -tilt);
-        //-
-
-
-        //* není potřeba, místo toho coroutine níže
-        // if (Time.time > specialDisable && Time.time < specialDisable + 1.0f) // range instead of == because I'm scared it might miss it if the game lags, but also don't want it checking all the time
-        // {
-        //     shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-        // }
     }
-    IEnumerator SpecialCoolDown()
+    IEnumerator SpecialNormalize()
     {
-        yield return new WaitForSeconds(specialDisable);
+        yield return new WaitForSeconds(specialDisable - Time.time);
         shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
     }
     void Special()
@@ -99,7 +87,7 @@ public class PlayerController : MonoBehaviour
             nextspecial = specialDisable + specialCooldown;
             shot.transform.localScale = specialSize;
 
-            StartCoroutine(SpecialCoolDown());
+            StartCoroutine("SpecialNormalize");
         }
     }
 
