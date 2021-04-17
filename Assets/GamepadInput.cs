@@ -49,6 +49,14 @@ public class @GamepadInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Restart"",
+                    ""type"": ""Button"",
+                    ""id"": ""c7b34a4a-86db-4209-a498-6b929f1abb27"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -282,6 +290,28 @@ public class @GamepadInput : IInputActionCollection, IDisposable
                     ""action"": ""Special"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72ca7eac-4c9d-43c7-bd4d-924341180d1f"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Restart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9c2b69f0-49d7-4524-b63c-101ec1c74141"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Restart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -294,6 +324,7 @@ public class @GamepadInput : IInputActionCollection, IDisposable
         m_Gameplay_Turbo = m_Gameplay.FindAction("Turbo", throwIfNotFound: true);
         m_Gameplay_Shoot = m_Gameplay.FindAction("Shoot", throwIfNotFound: true);
         m_Gameplay_Special = m_Gameplay.FindAction("Special", throwIfNotFound: true);
+        m_Gameplay_Restart = m_Gameplay.FindAction("Restart", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -347,6 +378,7 @@ public class @GamepadInput : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_Turbo;
     private readonly InputAction m_Gameplay_Shoot;
     private readonly InputAction m_Gameplay_Special;
+    private readonly InputAction m_Gameplay_Restart;
     public struct GameplayActions
     {
         private @GamepadInput m_Wrapper;
@@ -355,6 +387,7 @@ public class @GamepadInput : IInputActionCollection, IDisposable
         public InputAction @Turbo => m_Wrapper.m_Gameplay_Turbo;
         public InputAction @Shoot => m_Wrapper.m_Gameplay_Shoot;
         public InputAction @Special => m_Wrapper.m_Gameplay_Special;
+        public InputAction @Restart => m_Wrapper.m_Gameplay_Restart;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -376,6 +409,9 @@ public class @GamepadInput : IInputActionCollection, IDisposable
                 @Special.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSpecial;
                 @Special.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSpecial;
                 @Special.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSpecial;
+                @Restart.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
+                @Restart.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
+                @Restart.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -392,6 +428,9 @@ public class @GamepadInput : IInputActionCollection, IDisposable
                 @Special.started += instance.OnSpecial;
                 @Special.performed += instance.OnSpecial;
                 @Special.canceled += instance.OnSpecial;
+                @Restart.started += instance.OnRestart;
+                @Restart.performed += instance.OnRestart;
+                @Restart.canceled += instance.OnRestart;
             }
         }
     }
@@ -402,5 +441,6 @@ public class @GamepadInput : IInputActionCollection, IDisposable
         void OnTurbo(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
         void OnSpecial(InputAction.CallbackContext context);
+        void OnRestart(InputAction.CallbackContext context);
     }
 }

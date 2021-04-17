@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class Boundaries
@@ -12,6 +13,7 @@ public class PlayerController : MonoBehaviour
 {
     GamepadInput gamepad;
 
+    public Button specialButton;
     public GameObject shot;
     public Transform shotSpawn;
     public Rigidbody rib;
@@ -42,6 +44,7 @@ public class PlayerController : MonoBehaviour
         shotFrequency = 60 / shotsPerMinute;
         specialSize = new Vector3(specSizeMod, specSizeMod, specSizeMod);
         shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        specialButton.onClick.AddListener(Special);
     }
     void Awake()
     {
@@ -79,7 +82,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(specialDisable - Time.time);
         shot.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
     }
-    void Special()
+    public void Special()
     {
         if (Time.time > nextspecial)
         {
