@@ -91,6 +91,9 @@ public class GameController : MonoBehaviour
     }
     public void Restart()
     {
+        if (restart == true)
+        {   
             SceneManager.LoadScene("Main");
+        }
     }
 }
