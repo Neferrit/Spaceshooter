@@ -75,7 +75,6 @@ public class GameController : MonoBehaviour
     {
         backgroundMusic.Stop();
         yield return new WaitForSeconds(waitOnDeath);
-        Debug.Log("GameOver");
         scoreText.text = "";
         specialButton.gameObject.SetActive(false);
         gameOverSound.Play();
@@ -92,10 +91,6 @@ public class GameController : MonoBehaviour
     }
     public void Restart()
     {
-        if (restart == true)
-        {
-            Debug.Log("restarting");
             SceneManager.LoadScene("Main");
-        }
     }
 }

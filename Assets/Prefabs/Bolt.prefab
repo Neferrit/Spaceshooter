@@ -157,4 +157,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rib: {fileID: 8474458552499927632}
   speed: 15
-  shot: {fileID: 8474458552499927661}

@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     public GameObject shot;
     public Transform shotSpawn;
     public Rigidbody rib;
+    public GameController gameController;
 
     public float speed;
     public float turboMultiplier;
@@ -93,7 +94,6 @@ public class PlayerController : MonoBehaviour
             StartCoroutine("SpecialNormalize");
         }
     }
-
     private void OnEnable()
     {
         gamepad.Gameplay.Enable();
